@@ -2,13 +2,43 @@ namespace orbiter;
 
 class Program
 {
-    class Sun()
+    class Sun
     {
         public void ProcessTick()
         {
             Console.SetCursorPosition(Console.BufferWidth / 2, Console.BufferHeight / 2);
             Console.Write('@');
         }
+    }
+    
+    class Planet
+    {
+        private char symbol;
+        private int x;
+        private int y;
+        private int radius;
+        private double angle = 0;
+
+        public Planet(char symbol, int radius){
+            this.symbol = symbol;
+            this.radius = radius;
+        }
+        
+        private void SetPos(){
+            this.x = Console.BufferWidth / 2 + (int)Math.Round(Math.Cos(this.angle) * this.radius);
+            this.y = Console.BufferHeight / 2 + (int)Math.Round(Math.Sin(this.angle) * this.radius);
+        }
+        
+        public void ProcessTick(){
+            SetPos();
+            angle += 0.1;
+            if (angle >= 360) {
+                angle = 0;
+            }
+            Console.SetCursorPosition(this.x, this.y);
+            Console.Write(symbol);
+        }
+        
     }
 
     private static volatile bool _running = true;
@@ -26,6 +56,7 @@ class Program
         Console.CursorVisible = false;
 
         var sun = new Sun();
+        var earth = new Planet('o', 10);
 
         // Start asynchronous keypress handler
         var keyTask = Task.Run(() => HandleKeyPress());
@@ -36,6 +67,7 @@ class Program
             {
                 Console.Clear();
                 sun.ProcessTick();
+                earth.ProcessTick();
                 DrawControls();
                 await Task.Delay(200);
             }
