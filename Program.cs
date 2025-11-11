@@ -25,13 +25,13 @@ class Program
         }
         
         private void SetPos(){
-            this.x = Console.BufferWidth / 2 + (int)Math.Round(Math.Cos(this.angle) * this.radius);
-            this.y = Console.BufferHeight / 2 + (int)Math.Round(Math.Sin(this.angle) * this.radius);
+            this.x = Console.BufferWidth / 2 + (int)Math.Round(Math.Cos(this.angle) * this.radius * 2.25);
+            this.y = Console.BufferHeight / 2 + (int)Math.Round(Math.Sin(this.angle) * this.radius * 0.9);
         }
         
         public void ProcessTick(){
             SetPos();
-            angle -= 0.1;
+            angle -= 0.05;
             if (angle <= 0) {
                 angle = 360;
             }
@@ -69,7 +69,7 @@ class Program
                 sun.ProcessTick();
                 earth.ProcessTick();
                 DrawControls();
-                await Task.Delay(200);
+                await Task.Delay(100);
             }
         }
         finally
