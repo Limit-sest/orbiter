@@ -31,9 +31,9 @@ class Program
         
         public void ProcessTick(){
             SetPos();
-            angle += 0.1;
-            if (angle >= 360) {
-                angle = 0;
+            angle -= 0.1;
+            if (angle <= 0) {
+                angle = 360;
             }
             Console.SetCursorPosition(this.x, this.y);
             Console.Write(symbol);
