@@ -16,6 +16,7 @@ class Program
     static void DrawControls()
     {
         Console.SetCursorPosition(1, Console.BufferHeight);
+        Console.Write("\x1b[7m q \x1b[27m quit");
     }
 
     static async Task Main(string[] args)
@@ -35,6 +36,7 @@ class Program
             {
                 Console.Clear();
                 sun.ProcessTick();
+                DrawControls();
                 await Task.Delay(200);
             }
         }
