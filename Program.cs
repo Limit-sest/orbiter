@@ -27,8 +27,8 @@ class Program
         }
         
         private void SetPos(){
-            this.x = Console.BufferWidth / 2 + (int)Math.Round(Math.Cos(this.angle) * this.radius * 2.25);
-            this.y = Console.BufferHeight / 2 + (int)Math.Round(Math.Sin(this.angle) * this.radius * 0.9);
+            this.x = Console.BufferWidth / 2 + (int)Math.Round(Math.Cos(this.angle) * this.radius * 2.5);
+            this.y = Console.BufferHeight / 2 + (int)Math.Round(Math.Sin(this.angle) * this.radius * 0.8);
         }
         
         public void ProcessTick(){
@@ -67,7 +67,7 @@ class Program
         {
             while (_running)
             {
-                Console.Clear();
+                // Console.Clear();
                 sun.ProcessTick();
                 foreach (Planet planet in planets){
                     planet.ProcessTick();
