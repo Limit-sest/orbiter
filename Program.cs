@@ -18,10 +18,12 @@ class Program
         private int y;
         private int radius;
         private double angle = 0;
+        private double speed;
 
-        public Planet(char symbol, int radius){
+        public Planet(char symbol, int radius, double speed){
             this.symbol = symbol;
             this.radius = radius;
+            this.speed = speed;
         }
         
         private void SetPos(){
@@ -31,7 +33,7 @@ class Program
         
         public void ProcessTick(){
             SetPos();
-            angle -= 0.05;
+            angle -= speed;
             if (angle <= 0) {
                 angle = 360;
             }
@@ -56,7 +58,7 @@ class Program
         Console.CursorVisible = false;
 
         var sun = new Sun();
-        var earth = new Planet('o', 10);
+        var planets = new Planet[] { new Planet('m', 5, 0.032), new Planet('v', 7, 0.023), new Planet('z', 10, 0.02), new Planet('m', 13, 0.016), new Planet('j', 15, 0.0088), new Planet('s', 17, 0.0065), new Planet('u', 19, 0.0058), new Planet('n', 21, 0.0037) };
 
         // Start asynchronous keypress handler
         var keyTask = Task.Run(() => HandleKeyPress());
@@ -67,9 +69,11 @@ class Program
             {
                 Console.Clear();
                 sun.ProcessTick();
-                earth.ProcessTick();
+                foreach (Planet planet in planets){
+                    planet.ProcessTick();
+                }
                 DrawControls();
-                await Task.Delay(100);
+                await Task.Delay(30);
             }
         }
         finally
