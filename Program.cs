@@ -91,19 +91,29 @@ class Program
                     nextPoint = path[0];
                 }
 
-                currentPoint.Symbol = (previousPoint.X.CompareTo(nextPoint.X), previousPoint.Y.CompareTo(nextPoint.Y)) switch
+                currentPoint.Symbol = (previousPoint.X.CompareTo(currentPoint.X), previousPoint.Y.CompareTo(currentPoint.Y),
+                                       nextPoint.X.CompareTo(currentPoint.X), nextPoint.Y.CompareTo(currentPoint.Y)) switch
                 {
-                    (1, -1) => '┘',
-                    (-1, -1) => '┐',
-                    (1, 1) => '└',
-                    (-1, 1) => '┌',
-                    (1, 0) => '─',
-                    (-1, 0) => '─',
-                    (0, 1) => '│',
-                    (0, -1) => '│',
+                    // Corner cases: (where is previous, where is next)
+                    (-1, 0, 0, 1) => '┐',   // prev is LEFT, next is DOWN → lines go LEFT and DOWN
+                    (-1, 0, 0, -1) => '┘',  // prev is LEFT, next is UP → lines go LEFT and UP
+                    (1, 0, 0, 1) => '┌',    // prev is RIGHT, next is DOWN → lines go RIGHT and DOWN
+                    (1, 0, 0, -1) => '└',   // prev is RIGHT, next is UP → lines go RIGHT and UP
 
-                    _ => 'x'
+                    (0, -1, -1, 0) => '┘',  // prev is UP, next is LEFT → lines go UP and LEFT
+                    (0, -1, 1, 0) => '└',   // prev is UP, next is RIGHT → lines go UP and RIGHT
+                    (0, 1, -1, 0) => '┐',   // prev is DOWN, next is LEFT → lines go DOWN and LEFT
+                    (0, 1, 1, 0) => '┌',    // prev is DOWN, next is RIGHT → lines go DOWN and RIGHT
+
+                    // Straight lines
+                    (-1, 0, 1, 0) or (1, 0, -1, 0) => '─',  // Horizontal
+                    (0, -1, 0, 1) or (0, 1, 0, -1) => '│',  // Vertical
+
+                    _ => '?'
                 };
+                if (currentPoint.Symbol)
+
+
             }
         }
 
