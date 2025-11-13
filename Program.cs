@@ -4,10 +4,22 @@ class Program
 {
     class Sun
     {
+        string[] texture = {
+            "⣲⣵⣵⣅",
+            "⢽⣿⣿⢃",
+            "⡞⡻⠏⠳"
+        };
         public void ProcessTick()
         {
-            Console.SetCursorPosition(Console.BufferWidth / 2, Console.BufferHeight / 2);
-            Console.Write('@');
+            Console.Write($"\x1b[38;5;11m");
+            for (int i = 0; i < texture.Length; i++)
+
+            {
+                Console.SetCursorPosition(Console.BufferWidth / 2 - texture[0].Length / 2, Console.BufferHeight / 2 - texture.Length / 2 + i);
+                Console.Write(texture[i]);
+            }
+            Console.Write("\x1b[0m");
+
         }
     }
 
