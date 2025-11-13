@@ -4,7 +4,7 @@ class Program
 {
     class Sun
     {
-        public void DrawOnce()
+        public void ProcessTick()
         {
             Console.SetCursorPosition(Console.BufferWidth / 2, Console.BufferHeight / 2);
             Console.Write('@');
@@ -42,6 +42,15 @@ class Program
             this.symbol = symbol;
             this.radius = radius;
             this.speed = speed;
+        }
+
+        public void DrawPathOnce()
+        {
+            foreach (PathPoint point in path)
+            {
+                Console.SetCursorPosition(point.X, point.Y);
+                Console.Write(point.Symbol);
+            }
         }
 
         public void GeneratePath()
@@ -98,14 +107,6 @@ class Program
             }
         }
 
-        public void DrawPathOnce()
-        {
-            foreach (PathPoint point in path)
-            {
-                Console.SetCursorPosition(point.X, point.Y);
-                Console.Write(point.Symbol);
-            }
-        }
 
         private (int x, int y) GetPos(double angle, int radius)
         {
@@ -116,10 +117,8 @@ class Program
 
         public void ProcessTick()
         {
-            // Erase previous position by redrawing the path character at that location
             if (prevX >= 0 && prevY >= 0)
             {
-                // Find the path point at previous position and redraw it
                 var pathPoint = path.FirstOrDefault(p => p.X == prevX && p.Y == prevY);
                 if (pathPoint != null)
                 {
@@ -128,19 +127,14 @@ class Program
                 }
             }
 
-            // Calculate new position
             (this.x, this.y) = GetPos(this.angle, this.radius);
             angle -= speed;
             if (angle <= 0)
             {
                 angle = 360;
             }
-
-            // Draw planet at new position
             Console.SetCursorPosition(this.x, this.y);
             Console.Write(symbol);
-
-            // Store current position as previous for next frame
             prevX = this.x;
             prevY = this.y;
         }
@@ -158,4 +152,60 @@ class Program
     static async Task Main(string[] args)
     {
         // Console setup
-        Console.Write("\x1b[
+        Console.Write("\x1b[?1049h\x1b[H"); // Alternate buffer
+        Console.CursorVisible = false;
+
+        var sun = new Sun();
+        var planets = new Planet[] { new Planet('m', 5, 0.032), new Planet('v', 7, 0.023), new Planet('z', 10, 0.02), new Planet('m', 13, 0.016), new Planet('j', 15, 0.0088), new Planet('s', 17, 0.0065), new Planet('u', 19, 0.0058), new Planet('n', 21, 0.0037) };
+
+        // Start asynchronous keypress handler
+        var keyTask = Task.Run(() => HandleKeyPress());
+
+        Console.Clear();
+        foreach (Planet planet in planets)
+        {
+            planet.GeneratePath();
+            planet.DrawPathOnce();
+        }
+        sun.ProcessTick();
+        DrawControls();
+
+        try
+        {
+            while (_running)
+            {
+                foreach (Planet planet in planets)
+                {
+                    planet.ProcessTick();
+                }
+                await Task.Delay(500);
+            }
+        }
+        finally
+        {
+            Console.Write("\x1b[?1049l"); // Return to main buffer
+            Console.CursorVisible = true;
+        }
+
+        await keyTask;
+    }
+
+    private static void HandleKeyPress()
+    {
+        while (_running)
+        {
+            if (Console.KeyAvailable)
+            {
+                var key = Console.ReadKey(true);
+
+                // Exit on 'q' or 'Esc'
+                if (key.Key == ConsoleKey.Q || key.Key == ConsoleKey.Escape)
+                {
+                    _running = false;
+                    break;
+                }
+            }
+            Thread.Sleep(50);
+        }
+    }
+}
