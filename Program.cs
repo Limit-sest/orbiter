@@ -33,7 +33,8 @@ class Program
         private int prevX = -1;
         private int prevY = -1;
         private int radius;
-        private double angle = 0;
+        private double pathPosition = 0;
+        private int pathIndex = 0;
         private double speed;
         private List<PathPoint> path = new List<PathPoint>();
 
@@ -232,16 +233,15 @@ class Program
                 }
             }
 
-            (this.x, this.y) = GetPos(this.angle, this.radius);
-            angle -= speed;
-            if (angle <= 0)
-            {
-                angle = 360;
-            }
-            Console.SetCursorPosition(this.x, this.y);
+            pathPosition += speed;
+            pathIndex = ((int)pathPosition) % path.Count();
+
+            var currentPoint = path[pathIndex];
+            prevX = currentPoint.X;
+            prevY = currentPoint.Y;
+
+            Console.SetCursorPosition(currentPoint.X, currentPoint.Y);
             Console.Write(symbol);
-            prevX = this.x;
-            prevY = this.y;
         }
 
     }
@@ -261,7 +261,7 @@ class Program
         Console.CursorVisible = false;
 
         var sun = new Sun();
-        var planets = new Planet[] { new Planet('m', 5, 0.032), new Planet('v', 7, 0.023), new Planet('z', 10, 0.02), new Planet('m', 13, 0.016), new Planet('j', 15, 0.0088), new Planet('s', 17, 0.0065), new Planet('u', 19, 0.0058), new Planet('n', 21, 0.0037) };
+        var planets = new Planet[] { new Planet('m', 4, 0.8), new Planet('v', 6, 0.575), new Planet('z', 8, 0.5), new Planet('m', 10, 0.4), new Planet('j', 13, 0.22), new Planet('s', 17, 0.1625), new Planet('u', 20, 0.145), new Planet('n', 23, 0.0925) };
 
         // Start asynchronous keypress handler
         var keyTask = Task.Run(() => HandleKeyPress());
