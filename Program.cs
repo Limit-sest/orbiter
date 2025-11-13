@@ -37,21 +37,27 @@ class Program
         private int pathIndex = 0;
         private double speed;
         private List<PathPoint> path = new List<PathPoint>();
+        private int fg_color;
+        private int bg_color;
 
-        public Planet(char symbol, int radius, double speed)
+        public Planet(char symbol, int radius, double speed, int fg_color, int bg_color)
         {
             this.symbol = symbol;
             this.radius = radius;
             this.speed = speed;
+            this.fg_color = fg_color;
+            this.bg_color = bg_color;
         }
 
         public void DrawPathOnce()
         {
+            Console.Write($"\x1b[38;5;{bg_color}m");
             foreach (PathPoint point in path)
             {
                 Console.SetCursorPosition(point.X, point.Y);
                 Console.Write(point.Symbol);
             }
+            Console.Write("\x1b[0m");
         }
 
         public static List<(int X, int Y)> GenerateEllipse(int xc, int yc, int rx, int ry)
@@ -229,7 +235,7 @@ class Program
                 if (pathPoint != null)
                 {
                     Console.SetCursorPosition(prevX, prevY);
-                    Console.Write(pathPoint.Symbol);
+                    Console.Write($"\x1b[38;5;{bg_color}m{pathPoint.Symbol}\x1b[0m");
                 }
             }
 
@@ -241,7 +247,7 @@ class Program
             prevY = currentPoint.Y;
 
             Console.SetCursorPosition(currentPoint.X, currentPoint.Y);
-            Console.Write(symbol);
+            Console.Write($"\x1b[38;5;{fg_color}mO\x1b[0m");
         }
 
     }
@@ -261,7 +267,7 @@ class Program
         Console.CursorVisible = false;
 
         var sun = new Sun();
-        var planets = new Planet[] { new Planet('m', 4, 0.8), new Planet('v', 6, 0.575), new Planet('z', 8, 0.5), new Planet('m', 10, 0.4), new Planet('j', 13, 0.22), new Planet('s', 17, 0.1625), new Planet('u', 20, 0.145), new Planet('n', 23, 0.0925) };
+        var planets = new Planet[] { new Planet('m', 4, 0.8, 15, 7), new Planet('v', 6, 0.575, 13, 5), new Planet('z', 8, 0.5, 10, 2), new Planet('m', 10, 0.4, 1, 9), new Planet('j', 13, 0.22, 11, 3), new Planet('s', 17, 0.1625, 15, 7), new Planet('u', 20, 0.145, 14, 6), new Planet('n', 23, 0.0925, 12, 4) };
 
         // Start asynchronous keypress handler
         var keyTask = Task.Run(() => HandleKeyPress());
