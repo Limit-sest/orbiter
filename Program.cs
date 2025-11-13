@@ -53,20 +53,93 @@ class Program
             }
         }
 
+        public static List<(int X, int Y)> GenerateEllipse(int xc, int yc, int rx, int ry)
+        {
+            var uniquePoints = new HashSet<(int X, int Y)>();
+
+            long rx2 = (long)rx * rx;
+            long ry2 = (long)ry * ry;
+            long twoRx2 = 2 * rx2;
+            long twoRy2 = 2 * ry2;
+
+            long x = 0;
+            long y = ry;
+
+            long p1 = (long)Math.Round(ry2 - rx2 * ry + 0.25 * rx2);
+            long dx = 0;
+            long dy = twoRx2 * y;
+
+            while (dx < dy)
+            {
+                AddSymmetricPoints(uniquePoints, xc, yc, (int)x, (int)y);
+
+                x++;
+                dx = twoRy2 * x;
+
+                if (p1 < 0)
+                {
+                    p1 += dx + ry2;
+                }
+                else
+                {
+                    y--;
+                    dy = twoRx2 * y;
+                    p1 += dx - dy + ry2;
+                }
+            }
+
+            long p2 = (long)Math.Round(ry2 * (x + 0.5) * (x + 0.5) + rx2 * (y - 1) * (y - 1) - rx2 * ry2);
+
+            while (y >= 0)
+            {
+                AddSymmetricPoints(uniquePoints, xc, yc, (int)x, (int)y);
+
+                y--;
+                dy = twoRx2 * y;
+
+                if (p2 > 0)
+                {
+                    p2 += rx2 - dy;
+                }
+                else
+                {
+                    x++;
+                    dx = twoRy2 * x;
+                    p2 += dx - dy + rx2;
+                }
+            }
+
+            var sortedPoints = uniquePoints.OrderBy(p =>
+            {
+                double angle = Math.Atan2(p.Y - yc, p.X - xc);
+                if (angle < 0)
+                {
+                    angle += 2 * Math.PI;
+                }
+                return angle;
+            }).ToList();
+
+            return sortedPoints;
+        }
+
+        private static void AddSymmetricPoints(HashSet<(int X, int Y)> points, int xc, int yc, int x, int y)
+        {
+            points.Add((xc + x, yc + y));
+            points.Add((xc - x, yc + y));
+            points.Add((xc + x, yc - y));
+            points.Add((xc - x, yc - y));
+        }
+
         public void GeneratePath()
         {
             // Generate coords
-            for (double i = 0; i < 360; i += 0.01)
+            var points = GenerateEllipse(Console.BufferWidth / 2, Console.BufferHeight / 2, (int)Math.Round(this.radius * 2.5), (int)Math.Round(this.radius * 0.8));
+
+            foreach ((int X, int Y) point in points)
             {
-                (int x, int y) = GetPos(i, this.radius);
-                // Skip if same coords
-                if (path.Count() > 0)
-                {
-                    var previousPoint = path.Last();
-                    if ((x, y) == (previousPoint.X, previousPoint.Y)) continue;
-                }
-                path.Add(new PathPoint(x, y));
+                this.path.Add(new PathPoint(point.X, point.Y));
             }
+
             // Assign symbols
             for (int i = 0; i < path.Count(); i++)
             {
@@ -111,7 +184,6 @@ class Program
 
                     _ => '?'
                 };
-                if (currentPoint.Symbol)
 
 
             }
