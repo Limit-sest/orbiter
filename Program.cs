@@ -64,6 +64,8 @@ class Program
 
             long x = 0;
             long y = ry;
+            long prevX = 0;
+            long prevY = ry;
 
             long p1 = (long)Math.Round(ry2 - rx2 * ry + 0.25 * rx2);
             long dx = 0;
@@ -72,7 +74,10 @@ class Program
             while (dx < dy)
             {
                 AddSymmetricPoints(uniquePoints, xc, yc, (int)x, (int)y);
+                FillCornerGaps(uniquePoints, xc, yc, (int)prevX, (int)prevY, (int)x, (int)y);
 
+                prevX = x;
+                prevY = y;
                 x++;
                 dx = twoRy2 * x;
 
@@ -93,7 +98,10 @@ class Program
             while (y >= 0)
             {
                 AddSymmetricPoints(uniquePoints, xc, yc, (int)x, (int)y);
+                FillCornerGaps(uniquePoints, xc, yc, (int)prevX, (int)prevY, (int)x, (int)y);
 
+                prevX = x;
+                prevY = y;
                 y--;
                 dy = twoRx2 * y;
 
@@ -128,6 +136,21 @@ class Program
             points.Add((xc - x, yc + y));
             points.Add((xc + x, yc - y));
             points.Add((xc - x, yc - y));
+        }
+
+        private static void FillCornerGaps(HashSet<(int X, int Y)> points, int xc, int yc, int prevX, int prevY, int currX, int currY)
+        {
+            if (Math.Abs(currX - prevX) > 0 && Math.Abs(currY - prevY) > 0)
+            {
+                // Quadrant 1 (+x, +y)
+                points.Add((xc + currX, yc + prevY));
+                // Quadrant 2 (-x, +y)
+                points.Add((xc - currX, yc + prevY));
+                // Quadrant 3 (+x, -y)
+                points.Add((xc + currX, yc - prevY));
+                // Quadrant 4 (-x, -y)
+                points.Add((xc - currX, yc - prevY));
+            }
         }
 
         public void GeneratePath()
@@ -168,15 +191,15 @@ class Program
                                        nextPoint.X.CompareTo(currentPoint.X), nextPoint.Y.CompareTo(currentPoint.Y)) switch
                 {
                     // Corner cases: (where is previous, where is next)
-                    (-1, 0, 0, 1) => '┐',   // prev is LEFT, next is DOWN → lines go LEFT and DOWN
-                    (-1, 0, 0, -1) => '┘',  // prev is LEFT, next is UP → lines go LEFT and UP
-                    (1, 0, 0, 1) => '┌',    // prev is RIGHT, next is DOWN → lines go RIGHT and DOWN
-                    (1, 0, 0, -1) => '└',   // prev is RIGHT, next is UP → lines go RIGHT and UP
+                    (-1, 0, 0, 1) => '╮',   // prev is LEFT, next is DOWN → lines go LEFT and DOWN
+                    (-1, 0, 0, -1) => '╯',  // prev is LEFT, next is UP → lines go LEFT and UP
+                    (1, 0, 0, 1) => '╭',    // prev is RIGHT, next is DOWN → lines go RIGHT and DOWN
+                    (1, 0, 0, -1) => '╰',   // prev is RIGHT, next is UP → lines go RIGHT and UP
 
-                    (0, -1, -1, 0) => '┘',  // prev is UP, next is LEFT → lines go UP and LEFT
-                    (0, -1, 1, 0) => '└',   // prev is UP, next is RIGHT → lines go UP and RIGHT
-                    (0, 1, -1, 0) => '┐',   // prev is DOWN, next is LEFT → lines go DOWN and LEFT
-                    (0, 1, 1, 0) => '┌',    // prev is DOWN, next is RIGHT → lines go DOWN and RIGHT
+                    (0, -1, -1, 0) => '╯',  // prev is UP, next is LEFT → lines go UP and LEFT
+                    (0, -1, 1, 0) => '╰',   // prev is UP, next is RIGHT → lines go UP and RIGHT
+                    (0, 1, -1, 0) => '╮',   // prev is DOWN, next is LEFT → lines go DOWN and LEFT
+                    (0, 1, 1, 0) => '╭',    // prev is DOWN, next is RIGHT → lines go DOWN and RIGHT
 
                     // Straight lines
                     (-1, 0, 1, 0) or (1, 0, -1, 0) => '─',  // Horizontal
