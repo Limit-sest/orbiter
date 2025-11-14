@@ -251,7 +251,7 @@ class Program
                 }
             }
 
-            pathPosition += speed;
+            pathPosition += speed * speed_mult;
             pathIndex = ((int)pathPosition) % path.Count();
 
             var currentPoint = path[pathIndex];
@@ -265,11 +265,12 @@ class Program
     }
 
     private static volatile bool _running = true;
+    public static double speed_mult = 1.0;
 
     static void DrawControls()
     {
         Console.SetCursorPosition(1, Console.BufferHeight);
-        Console.Write("\x1b[7m q \x1b[27m quit");
+        Console.Write("\x1b[7m q \x1b[27m quit   \x1b[7m ← \x1b[27m speed \x1b[7m → \x1b[27m");
     }
 
     static async Task Main(string[] args)
@@ -301,7 +302,7 @@ class Program
                 {
                     planet.ProcessTick();
                 }
-                await Task.Delay(500);
+                await Task.Delay(200);
             }
         }
         finally
@@ -321,14 +322,24 @@ class Program
             {
                 var key = Console.ReadKey(true);
 
-                // Exit on 'q' or 'Esc'
-                if (key.Key == ConsoleKey.Q || key.Key == ConsoleKey.Escape)
+                switch (key.Key)
                 {
-                    _running = false;
-                    break;
+                    case ConsoleKey.Q:
+                        _running = false;
+                        break;
+                    case ConsoleKey.Escape:
+                        _running = false;
+                        break;
+                    case ConsoleKey.RightArrow:
+                        speed_mult += 0.1;
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        speed_mult -= 0.1;
+                        break;
                 }
+
             }
-            Thread.Sleep(50);
+            Thread.Sleep(25);
         }
     }
 }
