@@ -45,6 +45,33 @@ public class Planet
 
         }
 
+        public void Draw()
+        {
+            if (x >= 0 && y >= 0)
+            {
+                Helpers.ConsoleHelper.SafeSetCursorPosition(x, y);
+                Console.Write($"\x1b[38;5;{color}m{symbol}\x1b[0m");
+            }
+        }
+
+        public void Erase(int planetX, int planetY)
+        {
+            if (x >= 0 && y >= 0 && !(x == planetX && y == planetY))
+            {
+                Helpers.ConsoleHelper.SafeSetCursorPosition(x, y);
+                var key = (x, y);
+                if (paths.ContainsKey(key))
+                {
+                    var restoringPoint = paths[key].First();
+                    Console.Write($"\x1b[38;5;{restoringPoint.Color}m{restoringPoint.Symbol}\x1b[0m");
+                }
+                else
+                {
+                    Console.Write(' ');
+                }
+            }
+        }
+
         public void ProcessTick(int planetX, int planetY)
         {
             SetPosition(planetX, planetY);
@@ -64,12 +91,15 @@ public class Planet
                 }
             }
 
-            if (prevX != x || prevY != y)
+            if (AppState.MoonsShown)
             {
-                Helpers.ConsoleHelper.SafeSetCursorPosition(this.x, this.y);
-                Console.Write($"\x1b[38;5;{color}m{symbol}\x1b[0m");
-            }
+                if (prevX != x || prevY != y)
+                {
+                    Helpers.ConsoleHelper.SafeSetCursorPosition(this.x, this.y);
+                    Console.Write($"\x1b[38;5;{color}m{symbol}\x1b[0m");
+                }
 
+            }
             angle += speed * AppState.SpeedMultiplier;
 
             if (angle > 360) angle -= 360;
@@ -240,8 +270,29 @@ public class Planet
         {
             Console.Write($"\x1b[38;5;{fg_color}m⬤\x1b[0m");
         }
+    }
 
+    public void DrawMoons()
+    {
+        if (moons != null)
+        {
+            foreach (Moon moon in moons)
+            {
+                moon.Draw();
+            }
+        }
+    }
 
+    public void EraseMoons()
+    {
+        if (moons != null)
+        {
+            var currentPoint = path[pathIndex];
+            foreach (Moon moon in moons)
+            {
+                moon.Erase(currentPoint.X, currentPoint.Y);
+            }
+        }
     }
 
 }

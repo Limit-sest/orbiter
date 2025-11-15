@@ -38,7 +38,7 @@ class Program
     static void DrawControls()
     {
         Helpers.ConsoleHelper.SafeSetCursorPosition(1, Console.BufferHeight);
-        Console.Write("\x1b[7m q \x1b[27m quit   \x1b[7m ← \x1b[27m speed \x1b[7m → \x1b[27m   \x1b[7m space \x1b[27m toggle labels");
+        Console.Write("\x1b[7m Q \x1b[27m quit   \x1b[7m ← \x1b[27m speed \x1b[7m → \x1b[27m   \x1b[7m space \x1b[27m toggle labels   \x1b[7m M \x1b[27m toggle moons");
     }
 
     static async Task Main(string[] args)
@@ -110,6 +110,14 @@ class Program
                         for (int i = 0; i < planets.Length; i++)
                         {
                             planets[i].DrawLabel(i, !AppState.LabelsShown);
+                        }
+                        break;
+                    case ConsoleKey.M:
+                        AppState.MoonsShown = !AppState.MoonsShown;
+                        foreach (var planet in planets)
+                        {
+                            if (AppState.MoonsShown) planet.DrawMoons();
+                            else planet.EraseMoons();
                         }
                         break;
                 }
