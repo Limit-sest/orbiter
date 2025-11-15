@@ -7,14 +7,18 @@ public class Planet
         public int X;
         public int Y;
         public string? Symbol;
+        public int Color;
 
-        public PathPoint(int x, int y, string? symbol = " ")
+        public PathPoint(int x, int y, string? symbol = " ", int color = 0)
         {
             X = x;
             Y = y;
             Symbol = symbol;
+            Color = color;
         }
     }
+
+    private static Dictionary<(int X, int Y), List<PathPoint>> paths = new Dictionary<(int X, int Y), List<PathPoint>>();
 
     private string symbol;
     private string name;
@@ -24,9 +28,9 @@ public class Planet
     private double pathPosition = 0;
     private int pathIndex = 0;
     private double speed;
-    private List<PathPoint> path = new List<PathPoint>();
     private int fg_color;
     private int bg_color;
+    private List<PathPoint> path = new List<PathPoint>();
 
     public Planet(string symbol, string name, int radius, double speed, int fg_color, int bg_color)
     {
@@ -68,10 +72,10 @@ public class Planet
     {
         // Generate coords
         var points = Helpers.EllipseGenerator.GenerateEllipse(Console.BufferWidth / 2, Console.BufferHeight / 2, (int)Math.Round(this.radius * 2.5), (int)Math.Round(this.radius * 0.8));
-
         foreach ((int X, int Y) point in points)
         {
-            this.path.Add(new PathPoint(point.X, point.Y));
+            var pathPoint = new PathPoint(point.X, point.Y, color: bg_color);
+            this.path.Add(pathPoint);
         }
 
         // Assign symbols
@@ -118,8 +122,16 @@ public class Planet
 
                 _ => "?"
             };
+        }
 
-
+        foreach (var point in path)
+        {
+            var key = (point.X, point.Y);
+            if (!paths.ContainsKey(key))
+            {
+                paths[key] = new List<PathPoint>();
+            }
+            paths[key].Add(point);
         }
     }
 
@@ -128,12 +140,14 @@ public class Planet
     {
         if (prevX >= 0 && prevY >= 0)
         {
-            var pathPoint = path.FirstOrDefault(p => p.X == prevX && p.Y == prevY);
-            if (pathPoint != null)
+            var key = (prevX, prevY);
+            if (paths.ContainsKey(key))
             {
+                var restoringPoint = paths[key].First();
                 Console.SetCursorPosition(prevX, prevY);
-                Console.Write($"\x1b[38;5;{bg_color}m{pathPoint.Symbol}\x1b[0m");
+                Console.Write($"\x1b[38;5;{restoringPoint.Color}m{restoringPoint.Symbol}\x1b[0m");
             }
+            ;
         }
 
         pathPosition += speed * AppState.SpeedMultiplier;
