@@ -58,7 +58,7 @@ public class Planet
                     var restoringPoint = paths[key].First();
                     Console.Write($"\x1b[38;5;{restoringPoint.Color}m{restoringPoint.Symbol}\x1b[0m");
                 }
-                else
+                else if (!(prevX == planetX && prevY == planetY))
                 {
                     Console.Write(' ');
                 }
@@ -70,7 +70,7 @@ public class Planet
                 Console.Write($"\x1b[38;5;{color}m{symbol}\x1b[0m");
             }
 
-            angle += speed;
+            angle += speed * AppState.SpeedMultiplier;
 
             if (angle > 360) angle -= 360;
 
