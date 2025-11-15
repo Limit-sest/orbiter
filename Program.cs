@@ -247,7 +247,7 @@ class Program
                 if (pathPoint != null)
                 {
                     Console.SetCursorPosition(prevX, prevY);
-                    Console.Write($"\x1b[38;5;{bg_color}m{pathPoint.Symbol}\x1b[0m");
+                    Console.Write($"\x1b[38;5;{bg_color}m{(labelsShown == true) ? pathPoint.Symbol : 'O'}\x1b[0m");
                 }
             }
 
@@ -266,11 +266,12 @@ class Program
 
     private static volatile bool _running = true;
     public static double speed_mult = 1.0;
+    private static bool labelsShown = true;
 
     static void DrawControls()
     {
         Console.SetCursorPosition(1, Console.BufferHeight);
-        Console.Write("\x1b[7m q \x1b[27m quit   \x1b[7m ← \x1b[27m speed \x1b[7m → \x1b[27m");
+        Console.Write("\x1b[7m q \x1b[27m quit   \x1b[7m ← \x1b[27m speed \x1b[7m → \x1b[27m   \x1b[7m space \x1b[27m toggle labels");
     }
 
     static async Task Main(string[] args)
@@ -334,7 +335,10 @@ class Program
                         speed_mult += 0.1;
                         break;
                     case ConsoleKey.LeftArrow:
-                        speed_mult -= 0.1;
+                        if (speed_mult > 0.1) speed_mult -= 0.1;
+                        break;
+                    case ConsoleKey.Spacebar:
+                        labelsShown = !labelsShown;
                         break;
                 }
 
