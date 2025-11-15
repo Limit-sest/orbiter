@@ -73,6 +73,7 @@ public class Planet
             angle += speed * AppState.SpeedMultiplier;
 
             if (angle > 360) angle -= 360;
+            if (angle < 0) angle += 360;
 
             this.prevX = this.x;
             this.prevY = this.y;
