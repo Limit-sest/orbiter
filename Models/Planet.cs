@@ -25,12 +25,12 @@ public class Planet
         private int prevY = -1;
         private int x = -1;
         private int y = -1;
-        private int radius;
+        private double radius;
         private double angle = 0;
         private double speed;
         private int color;
 
-        public Moon(int radius, double speed, int color, char symbol = '◦')
+        public Moon(double radius, double speed, int color, char symbol = '◦')
         {
             this.radius = radius;
             this.speed = speed;
@@ -221,16 +221,6 @@ public class Planet
         prevX = currentPoint.X;
         prevY = currentPoint.Y;
 
-        Console.SetCursorPosition(currentPoint.X, currentPoint.Y);
-        if (AppState.LabelsShown)
-        {
-            Console.Write($"\x1b[38;5;{fg_color}m{symbol}\x1b[0m");
-        }
-        else
-        {
-            Console.Write($"\x1b[38;5;{fg_color}m○\x1b[0m");
-        }
-
         if (moons != null)
         {
             foreach (Moon moon in moons)
@@ -238,6 +228,18 @@ public class Planet
                 moon.ProcessTick(currentPoint.X, currentPoint.Y);
             }
         }
+
+        Console.SetCursorPosition(currentPoint.X, currentPoint.Y);
+        if (AppState.LabelsShown)
+        {
+            Console.Write($"\x1b[38;5;{fg_color}m{symbol}\x1b[0m");
+        }
+        else
+        {
+            Console.Write($"\x1b[38;5;{fg_color}m⬤\x1b[0m");
+        }
+
+
     }
 
 }
