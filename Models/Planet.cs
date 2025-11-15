@@ -52,7 +52,7 @@ public class Planet
             if ((prevX >= 0 && prevY >= 0) && (prevX != x || prevY != y))
             {
                 var key = (prevX, prevY);
-                Console.SetCursorPosition(prevX, prevY);
+                Helpers.ConsoleHelper.SafeSetCursorPosition(prevX, prevY);
                 if (paths.ContainsKey(key))
                 {
                     var restoringPoint = paths[key].First();
@@ -66,7 +66,7 @@ public class Planet
 
             if (prevX != x || prevY != y)
             {
-                Console.SetCursorPosition(this.x, this.y);
+                Helpers.ConsoleHelper.SafeSetCursorPosition(this.x, this.y);
                 Console.Write($"\x1b[38;5;{color}m{symbol}\x1b[0m");
             }
 
@@ -80,12 +80,13 @@ public class Planet
     }
 
     private static Dictionary<(int X, int Y), List<PathPoint>> paths = new Dictionary<(int X, int Y), List<PathPoint>>();
+    public static double ScalingFactor { get; set; } = 1.0;
 
     private string symbol;
     private string name;
     private int prevX = -1;
     private int prevY = -1;
-    private int radius;
+    private double radius;
     private double pathPosition = 0;
     private int pathIndex = 0;
     private double speed;
@@ -98,7 +99,7 @@ public class Planet
     {
         this.symbol = symbol;
         this.name = name;
-        this.radius = radius;
+        this.radius = radius * ScalingFactor;
         this.speed = speed;
         this.fg_color = fg_color;
         this.bg_color = bg_color;
@@ -110,7 +111,7 @@ public class Planet
         Console.Write($"\x1b[38;5;{bg_color}m");
         foreach (PathPoint point in path)
         {
-            Console.SetCursorPosition(point.X, point.Y);
+            Helpers.ConsoleHelper.SafeSetCursorPosition(point.X, point.Y);
             Console.Write(point.Symbol);
         }
         Console.Write("\x1b[0m");
@@ -118,7 +119,7 @@ public class Planet
 
     public void DrawLabel(int offset, bool erase = false)
     {
-        Console.SetCursorPosition(0, offset);
+        Helpers.ConsoleHelper.SafeSetCursorPosition(0, offset);
         if (erase)
         {
             Console.Write(new String(' ', this.name.Count()));
@@ -134,7 +135,7 @@ public class Planet
     public void GeneratePath()
     {
         // Generate coords
-        var points = Helpers.EllipseGenerator.GenerateEllipse(Console.BufferWidth / 2, Console.BufferHeight / 2, (int)Math.Round(this.radius * 2.5), (int)Math.Round(this.radius * 0.8));
+        var points = Helpers.EllipseGenerator.GenerateEllipse(Console.BufferWidth / 2, Console.BufferHeight / 2, (int)Math.Round(this.radius), (int)Math.Round(this.radius * 0.32));
         foreach ((int X, int Y) point in points)
         {
             var pathPoint = new PathPoint(point.X, point.Y, color: bg_color);
@@ -207,7 +208,7 @@ public class Planet
             if (paths.ContainsKey(key))
             {
                 var restoringPoint = paths[key].First();
-                Console.SetCursorPosition(prevX, prevY);
+                Helpers.ConsoleHelper.SafeSetCursorPosition(prevX, prevY);
                 Console.Write($"\x1b[38;5;{restoringPoint.Color}m{restoringPoint.Symbol}\x1b[0m");
             }
         }
@@ -229,7 +230,7 @@ public class Planet
             }
         }
 
-        Console.SetCursorPosition(currentPoint.X, currentPoint.Y);
+        Helpers.ConsoleHelper.SafeSetCursorPosition(currentPoint.X, currentPoint.Y);
         if (AppState.LabelsShown)
         {
             Console.Write($"\x1b[38;5;{fg_color}m{symbol}\x1b[0m");

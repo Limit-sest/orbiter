@@ -14,12 +14,13 @@ class Program
 
     static void DrawControls()
     {
-        Console.SetCursorPosition(1, Console.BufferHeight);
+        Helpers.ConsoleHelper.SafeSetCursorPosition(1, Console.BufferHeight);
         Console.Write("\x1b[7m q \x1b[27m quit   \x1b[7m ← \x1b[27m speed \x1b[7m → \x1b[27m   \x1b[7m space \x1b[27m toggle labels");
     }
 
     static async Task Main(string[] args)
     {
+        Models.Planet.ScalingFactor = ((Console.BufferWidth) * 0.90) / (23.0 * 2.5);
         // Console setup
         Console.Write("\x1b[?1049h\x1b[H"); // Alternate buffer
         Console.CursorVisible = false;
