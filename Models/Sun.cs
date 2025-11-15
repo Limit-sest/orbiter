@@ -3,9 +3,9 @@ namespace orbiter.Models;
 public class Sun
 {
     private readonly string[] texture = {
-        "⣲⣵⣵⣅",
-        "⢽⣿⣿⢃",
-        "⡞⡻⠏⠳"
+        "⢠⣶⣿⣿⣶⡄",
+        "⣿⣿⣿⣿⣿⣿",
+        "⠘⠿⣿⣿⠿⠃"
     };
     public void ProcessTick()
     {
