@@ -2,7 +2,15 @@ namespace orbiter;
 
 class Program
 {
-    public static Models.Planet[] planets = new Models.Planet[] { new Models.Planet("M", "Mercury", 4, 0.8, 15, 7), new Models.Planet("V", "Venus", 6, 0.575, 13, 5), new Models.Planet("E", "Earth", 8, 0.5, 10, 2), new Models.Planet("M", "Mars", 10, 0.4, 1, 9), new Models.Planet("J", "Jupiter", 13, 0.22, 11, 3), new Models.Planet("S", "Saturn", 17, 0.1625, 15, 7), new Models.Planet("U", "Uranus", 20, 0.145, 14, 6), new Models.Planet("N", "Neptune", 23, 0.0925, 12, 4) };
+    public static Models.Planet[] planets = new Models.Planet[] {
+        new Models.Planet("M", "Mercury", 4, 0.8, 15, 7),
+        new Models.Planet("V", "Venus", 6, 0.575, 13, 5),
+        new Models.Planet("E", "Earth", 8, 0.5, 10, 2, new List<Models.Planet.Moon> { new Models.Planet.Moon(1, 0.1, 10) }),
+        new Models.Planet("M", "Mars", 10, 0.4, 1, 9),
+        new Models.Planet("J", "Jupiter", 13, 0.22, 11, 3),
+        new Models.Planet("S", "Saturn", 17, 0.1625, 15, 7),
+        new Models.Planet("U", "Uranus", 20, 0.145, 14, 6),
+        new Models.Planet("N", "Neptune", 23, 0.0925, 12, 4) };
 
     static void DrawControls()
     {

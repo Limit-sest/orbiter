@@ -18,6 +18,67 @@ public class Planet
         }
     }
 
+    public class Moon
+    {
+        private char symbol;
+        private int prevX = -1;
+        private int prevY = -1;
+        private int x = -1;
+        private int y = -1;
+        private int radius;
+        private double angle = 0;
+        private double speed;
+        private int color;
+
+        public Moon(int radius, double speed, int color, char symbol = '◦')
+        {
+            this.radius = radius;
+            this.speed = speed;
+            this.color = color;
+            this.symbol = symbol;
+        }
+
+        private void SetPosition(int planetX, int planetY)
+        {
+            this.x = planetX + (int)Math.Round(Math.Cos(this.angle) * this.radius * 2.25);
+            this.y = planetY + (int)Math.Round(Math.Sin(this.angle) * this.radius);
+
+        }
+
+        public void ProcessTick(int planetX, int planetY)
+        {
+            SetPosition(planetX, planetY);
+
+            if ((prevX >= 0 && prevY >= 0) && (prevX != x || prevY != y))
+            {
+                var key = (prevX, prevY);
+                Console.SetCursorPosition(prevX, prevY);
+                if (paths.ContainsKey(key))
+                {
+                    var restoringPoint = paths[key].First();
+                    Console.Write($"\x1b[38;5;{restoringPoint.Color}m{restoringPoint.Symbol}\x1b[0m");
+                }
+                else
+                {
+                    Console.Write(' ');
+                }
+            }
+
+            if (prevX != x || prevY != y)
+            {
+                Console.SetCursorPosition(this.x, this.y);
+                Console.Write($"\x1b[38;5;{color}m{symbol}\x1b[0m");
+            }
+
+            angle += speed;
+
+            if (angle > 360) angle -= 360;
+
+            this.prevX = this.x;
+            this.prevY = this.y;
+        }
+    }
+
     private static Dictionary<(int X, int Y), List<PathPoint>> paths = new Dictionary<(int X, int Y), List<PathPoint>>();
 
     private string symbol;
@@ -31,8 +92,9 @@ public class Planet
     private int fg_color;
     private int bg_color;
     private List<PathPoint> path = new List<PathPoint>();
+    private List<Moon>? moons;
 
-    public Planet(string symbol, string name, int radius, double speed, int fg_color, int bg_color)
+    public Planet(string symbol, string name, int radius, double speed, int fg_color, int bg_color, List<Moon>? moons = null)
     {
         this.symbol = symbol;
         this.name = name;
@@ -40,6 +102,7 @@ public class Planet
         this.speed = speed;
         this.fg_color = fg_color;
         this.bg_color = bg_color;
+        this.moons = moons;
     }
 
     public void DrawPathOnce()
@@ -147,8 +210,9 @@ public class Planet
                 Console.SetCursorPosition(prevX, prevY);
                 Console.Write($"\x1b[38;5;{restoringPoint.Color}m{restoringPoint.Symbol}\x1b[0m");
             }
-            ;
         }
+
+
 
         pathPosition += speed * AppState.SpeedMultiplier;
         pathIndex = ((int)pathPosition) % path.Count();
@@ -165,6 +229,14 @@ public class Planet
         else
         {
             Console.Write($"\x1b[38;5;{fg_color}m○\x1b[0m");
+        }
+
+        if (moons != null)
+        {
+            foreach (Moon moon in moons)
+            {
+                moon.ProcessTick(currentPoint.X, currentPoint.Y);
+            }
         }
     }
 
