@@ -23,7 +23,7 @@ class Program
         }
     }
 
-    class Planet
+    public class Planet
     {
         class PathPoint
         {
@@ -40,8 +40,7 @@ class Program
         }
 
         private char symbol;
-        private int x;
-        private int y;
+        private string name;
         private int prevX = -1;
         private int prevY = -1;
         private int radius;
@@ -52,9 +51,10 @@ class Program
         private int fg_color;
         private int bg_color;
 
-        public Planet(char symbol, int radius, double speed, int fg_color, int bg_color)
+        public Planet(char symbol, string name, int radius, double speed, int fg_color, int bg_color)
         {
             this.symbol = symbol;
+            this.name = name;
             this.radius = radius;
             this.speed = speed;
             this.fg_color = fg_color;
@@ -70,6 +70,19 @@ class Program
                 Console.Write(point.Symbol);
             }
             Console.Write("\x1b[0m");
+        }
+
+        public void DrawLabel(int offset, bool erase = false)
+        {
+            Console.SetCursorPosition(0, offset);
+            if (erase)
+            {
+                Console.Write(new String(' ', this.name.Count()));
+            }
+            else
+            {
+                Console.Write($"\x1b[38;5;{bg_color}m{this.name}\x1b[0m");
+            }
         }
 
         public static List<(int X, int Y)> GenerateEllipse(int xc, int yc, int rx, int ry)
@@ -157,6 +170,8 @@ class Program
             points.Add((xc - x, yc - y));
         }
 
+
+
         private static void FillCornerGaps(HashSet<(int X, int Y)> points, int xc, int yc, int prevX, int prevY, int currX, int currY)
         {
             if (Math.Abs(currX - prevX) > 0 && Math.Abs(currY - prevY) > 0)
@@ -232,13 +247,6 @@ class Program
         }
 
 
-        private (int x, int y) GetPos(double angle, int radius)
-        {
-            x = Console.BufferWidth / 2 + (int)Math.Round(Math.Cos(angle) * radius * 2.5);
-            y = Console.BufferHeight / 2 + (int)Math.Round(Math.Sin(angle) * radius * 0.8);
-            return (x, y);
-        }
-
         public void ProcessTick()
         {
             if (prevX >= 0 && prevY >= 0)
@@ -247,7 +255,7 @@ class Program
                 if (pathPoint != null)
                 {
                     Console.SetCursorPosition(prevX, prevY);
-                    Console.Write($"\x1b[38;5;{bg_color}m{(labelsShown == true) ? pathPoint.Symbol : 'O'}\x1b[0m");
+                    Console.Write($"\x1b[38;5;{bg_color}m{pathPoint.Symbol}\x1b[0m");
                 }
             }
 
@@ -259,7 +267,14 @@ class Program
             prevY = currentPoint.Y;
 
             Console.SetCursorPosition(currentPoint.X, currentPoint.Y);
-            Console.Write($"\x1b[38;5;{fg_color}mO\x1b[0m");
+            if (labelsShown)
+            {
+                Console.Write($"\x1b[38;5;{fg_color}m{symbol}\x1b[0m");
+            }
+            else
+            {
+                Console.Write($"\x1b[38;5;{fg_color}mO\x1b[0m");
+            }
         }
 
     }
@@ -267,6 +282,7 @@ class Program
     private static volatile bool _running = true;
     public static double speed_mult = 1.0;
     private static bool labelsShown = true;
+    public static Planet[] planets = new Planet[] { new Planet('m', "Mercury", 4, 0.8, 15, 7), new Planet('v', "Venus", 6, 0.575, 13, 5), new Planet('e', "Earth", 8, 0.5, 10, 2), new Planet('m', "Mars", 10, 0.4, 1, 9), new Planet('j', "Jupiter", 13, 0.22, 11, 3), new Planet('s', "Saturn", 17, 0.1625, 15, 7), new Planet('u', "Uranus", 20, 0.145, 14, 6), new Planet('n', "Neptune", 23, 0.0925, 12, 4) };
 
     static void DrawControls()
     {
@@ -281,16 +297,16 @@ class Program
         Console.CursorVisible = false;
 
         var sun = new Sun();
-        var planets = new Planet[] { new Planet('m', 4, 0.8, 15, 7), new Planet('v', 6, 0.575, 13, 5), new Planet('z', 8, 0.5, 10, 2), new Planet('m', 10, 0.4, 1, 9), new Planet('j', 13, 0.22, 11, 3), new Planet('s', 17, 0.1625, 15, 7), new Planet('u', 20, 0.145, 14, 6), new Planet('n', 23, 0.0925, 12, 4) };
 
         // Start asynchronous keypress handler
         var keyTask = Task.Run(() => HandleKeyPress());
 
         Console.Clear();
-        foreach (Planet planet in planets)
+        for (int i = 0; i < planets.Length; i++)
         {
-            planet.GeneratePath();
-            planet.DrawPathOnce();
+            planets[i].GeneratePath();
+            planets[i].DrawPathOnce();
+            planets[i].DrawLabel(i, !labelsShown);
         }
         sun.ProcessTick();
         DrawControls();
@@ -339,6 +355,10 @@ class Program
                         break;
                     case ConsoleKey.Spacebar:
                         labelsShown = !labelsShown;
+                        for (int i = 0; i < planets.Length; i++)
+                        {
+                            planets[i].DrawLabel(i, !labelsShown);
+                        }
                         break;
                 }
 
