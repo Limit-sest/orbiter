@@ -29,9 +29,9 @@ class Program
         {
             public int X;
             public int Y;
-            public char? Symbol;
+            public string? Symbol;
 
-            public PathPoint(int x, int y, char? symbol = ' ')
+            public PathPoint(int x, int y, string? symbol = " ")
             {
                 X = x;
                 Y = y;
@@ -39,7 +39,7 @@ class Program
             }
         }
 
-        private char symbol;
+        private string symbol;
         private string name;
         private int prevX = -1;
         private int prevY = -1;
@@ -51,7 +51,7 @@ class Program
         private int fg_color;
         private int bg_color;
 
-        public Planet(char symbol, string name, int radius, double speed, int fg_color, int bg_color)
+        public Planet(string symbol, string name, int radius, double speed, int fg_color, int bg_color)
         {
             this.symbol = symbol;
             this.name = name;
@@ -77,11 +77,11 @@ class Program
             Console.SetCursorPosition(0, offset);
             if (erase)
             {
-                Console.Write(new String(' ', this.name.Count()));
+                Console.Write(new String(' ', this.name.Count() + 2));
             }
             else
             {
-                Console.Write($"\x1b[38;5;{bg_color}m{this.name}\x1b[0m");
+                Console.Write($"\x1b[38;5;{bg_color}m{this.symbol} {this.name}\x1b[0m");
             }
         }
 
@@ -225,21 +225,21 @@ class Program
                                        nextPoint.X.CompareTo(currentPoint.X), nextPoint.Y.CompareTo(currentPoint.Y)) switch
                 {
                     // Corner cases: (where is previous, where is next)
-                    (-1, 0, 0, 1) => '╮',   // prev is LEFT, next is DOWN → lines go LEFT and DOWN
-                    (-1, 0, 0, -1) => '╯',  // prev is LEFT, next is UP → lines go LEFT and UP
-                    (1, 0, 0, 1) => '╭',    // prev is RIGHT, next is DOWN → lines go RIGHT and DOWN
-                    (1, 0, 0, -1) => '╰',   // prev is RIGHT, next is UP → lines go RIGHT and UP
+                    (-1, 0, 0, 1) => "╮",   // prev is LEFT, next is DOWN → lines go LEFT and DOWN
+                    (-1, 0, 0, -1) => "╯",  // prev is LEFT, next is UP → lines go LEFT and UP
+                    (1, 0, 0, 1) => "╭",    // prev is RIGHT, next is DOWN → lines go RIGHT and DOWN
+                    (1, 0, 0, -1) => "╰",   // prev is RIGHT, next is UP → lines go RIGHT and UP
 
-                    (0, -1, -1, 0) => '╯',  // prev is UP, next is LEFT → lines go UP and LEFT
-                    (0, -1, 1, 0) => '╰',   // prev is UP, next is RIGHT → lines go UP and RIGHT
-                    (0, 1, -1, 0) => '╮',   // prev is DOWN, next is LEFT → lines go DOWN and LEFT
-                    (0, 1, 1, 0) => '╭',    // prev is DOWN, next is RIGHT → lines go DOWN and RIGHT
+                    (0, -1, -1, 0) => "╯",  // prev is UP, next is LEFT → lines go UP and LEFT
+                    (0, -1, 1, 0) => "╰",   // prev is UP, next is RIGHT → lines go UP and RIGHT
+                    (0, 1, -1, 0) => "╮",   // prev is DOWN, next is LEFT → lines go DOWN and LEFT
+                    (0, 1, 1, 0) => "╭",    // prev is DOWN, next is RIGHT → lines go DOWN and RIGHT
 
                     // Straight lines
-                    (-1, 0, 1, 0) or (1, 0, -1, 0) => '─',  // Horizontal
-                    (0, -1, 0, 1) or (0, 1, 0, -1) => '│',  // Vertical
+                    (-1, 0, 1, 0) or (1, 0, -1, 0) => "─",  // Horizontal
+                    (0, -1, 0, 1) or (0, 1, 0, -1) => "│",  // Vertical
 
-                    _ => '?'
+                    _ => "?"
                 };
 
 
@@ -273,7 +273,7 @@ class Program
             }
             else
             {
-                Console.Write($"\x1b[38;5;{fg_color}mO\x1b[0m");
+                Console.Write($"\x1b[38;5;{fg_color}m○\x1b[0m");
             }
         }
 
@@ -282,7 +282,7 @@ class Program
     private static volatile bool _running = true;
     public static double speed_mult = 1.0;
     private static bool labelsShown = true;
-    public static Planet[] planets = new Planet[] { new Planet('m', "Mercury", 4, 0.8, 15, 7), new Planet('v', "Venus", 6, 0.575, 13, 5), new Planet('e', "Earth", 8, 0.5, 10, 2), new Planet('m', "Mars", 10, 0.4, 1, 9), new Planet('j', "Jupiter", 13, 0.22, 11, 3), new Planet('s', "Saturn", 17, 0.1625, 15, 7), new Planet('u', "Uranus", 20, 0.145, 14, 6), new Planet('n', "Neptune", 23, 0.0925, 12, 4) };
+    public static Planet[] planets = new Planet[] { new Planet("☿", "Mercury", 4, 0.8, 15, 7), new Planet("♀", "Venus", 6, 0.575, 13, 5), new Planet("🜨", "Earth", 8, 0.5, 10, 2), new Planet("♂", "Mars", 10, 0.4, 1, 9), new Planet("♃", "Jupiter", 13, 0.22, 11, 3), new Planet("♄", "Saturn", 17, 0.1625, 15, 7), new Planet("⛢", "Uranus", 20, 0.145, 14, 6), new Planet("♆", "Neptune", 23, 0.0925, 12, 4) };
 
     static void DrawControls()
     {
