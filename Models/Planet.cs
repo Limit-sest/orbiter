@@ -28,13 +28,15 @@ public class Planet
         private double radius;
         private double angle = 0;
         private double speed;
-        private int color;
+        public int Color;
+        public string Name;
 
-        public Moon(double radius, double speed, int color, char symbol = '◦')
+        public Moon(double radius, double speed, int color, string name, char symbol = '◦')
         {
             this.radius = radius;
             this.speed = speed;
-            this.color = color;
+            this.Color = color;
+            this.Name = name;
             this.symbol = symbol;
         }
 
@@ -50,7 +52,7 @@ public class Planet
             if (x >= 0 && y >= 0)
             {
                 Helpers.ConsoleHelper.SafeSetCursorPosition(x, y);
-                Console.Write($"\x1b[38;5;{color}m{symbol}\x1b[0m");
+                Console.Write($"\x1b[38;5;{Color}m{symbol}\x1b[0m");
             }
         }
 
@@ -96,7 +98,7 @@ public class Planet
                 if (prevX != x || prevY != y)
                 {
                     Helpers.ConsoleHelper.SafeSetCursorPosition(this.x, this.y);
-                    Console.Write($"\x1b[38;5;{color}m{symbol}\x1b[0m");
+                    Console.Write($"\x1b[38;5;{Color}m{symbol}\x1b[0m");
                 }
 
             }
@@ -294,5 +296,40 @@ public class Planet
             }
         }
     }
+
+    public bool HasMoons()
+    {
+        return moons != null && moons.Count > 0;
+    }
+
+    public int GetMoonCount()
+    {
+        return moons?.Count ?? 0;
+    }
+
+    public void DrawMoonLabels(int startRow, bool erase = false)
+    {
+        if (moons != null)
+        {
+            int row = startRow;
+            for (int i = 0; i < moons.Count(); i++)
+            {
+                var moon = moons[i];
+                Helpers.ConsoleHelper.SafeSetCursorPosition(0, row);
+                if (erase)
+                {
+                    Console.Write(new String(' ', moon.Name.Length + 2));
+                }
+                else
+                {
+                    char line = '⎬';
+                    if (i == moons.Count() - 1) line = '⎩';
+                    Console.Write($"{line} \x1b[38;5;{moon.Color}m{moon.Name}\x1b[0m");
+                }
+                row++;
+            }
+        }
+    }
+
 
 }
