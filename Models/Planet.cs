@@ -8,6 +8,7 @@ public class Planet
         public int Y;
         public string? Symbol;
         public int Color;
+        public double DistanceFromSun;
 
         public PathPoint(int x, int y, string? symbol = " ", int color = 0)
         {
@@ -15,6 +16,7 @@ public class Planet
             Y = y;
             Symbol = symbol;
             Color = color;
+            DistanceFromSun = 0;
         }
     }
 
@@ -127,6 +129,7 @@ public class Planet
     private int bg_color;
     private List<PathPoint> path = new List<PathPoint>();
     private List<Moon>? moons;
+    private double averageSunDistance;
 
     public Planet(string symbol, string name, int radius, double speed, int fg_color, int bg_color, List<Moon>? moons = null)
     {
@@ -168,12 +171,23 @@ public class Planet
     public void GeneratePath()
     {
         // Generate coords
-        var points = Helpers.EllipseGenerator.GenerateEllipse(Console.BufferWidth / 2, Console.BufferHeight / 2, (int)Math.Round(this.radius), (int)Math.Round(this.radius * 0.32));
+        int centerX = Console.BufferWidth / 2;
+        int centerY = Console.BufferHeight / 2;
+        var points = Helpers.EllipseGenerator.GenerateEllipse(centerX, centerY, (int)Math.Round(this.radius), (int)Math.Round(this.radius * 0.32));
+        double distanceSum = 0;
         foreach ((int X, int Y) point in points)
         {
             var pathPoint = new PathPoint(point.X, point.Y, color: bg_color);
+
+            // Calculate distance from Sun (center of screen)
+            double dx = point.X - centerX;
+            double dy = point.Y - centerY;
+            pathPoint.DistanceFromSun = Math.Sqrt(dx * dx + dy * dy);
+            distanceSum += pathPoint.DistanceFromSun;
             this.path.Add(pathPoint);
         }
+
+        averageSunDistance = distanceSum / points.Count();
 
         // Assign symbols
         for (int i = 0; i < path.Count(); i++)
@@ -247,11 +261,13 @@ public class Planet
         }
 
 
+        var currentPoint = path[pathIndex];
 
-        pathPosition += speed * AppState.SpeedMultiplier;
+        pathPosition += speed * AppState.SpeedMultiplier * (averageSunDistance / currentPoint.DistanceFromSun);
         pathIndex = ((int)pathPosition) % path.Count();
 
-        var currentPoint = path[pathIndex];
+        currentPoint = path[pathIndex];
+
         prevX = currentPoint.X;
         prevY = currentPoint.Y;
 
