@@ -3,6 +3,6 @@
 # orbiter
 A simple real-time solar system simulator that runs in your terminal. It renders planets, their orbits, and their moons using unicode characters.
 
-## Showcase
-![orbiterdemo-ezgif com-optimize](https://github.com/user-attachments/assets/674baab9-afd5-4982-8f91-8df3a50f06d9)
-[view the non-gif version here ↗](https://static.limit6.eu/orbiterdemo.mp4)
+## Showcase video
+https://github.com/user-attachments/assets/2e079610-25fc-4591-b9d5-1e152bb650c1
+
